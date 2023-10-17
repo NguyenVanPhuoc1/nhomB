@@ -28,7 +28,7 @@ if(!empty($_GET['keyword'])) {
                     <li><a href="form_user.php">Add new user</a></li>
 
                 </ul>
-                <form class="navbar-form navbar-left" onsubmit="return checkInputSearch(event)">
+                <form class="navbar-form navbar-left" method="get">
                     <div class="form-group">
                         <input type="text" name="keyword" id="input-search" class="form-control" placeholder="Search users" value="<?php echo $keyword ?>">
                     </div>

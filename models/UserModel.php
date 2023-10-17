@@ -1,11 +1,12 @@
 <?php
 
 require_once 'BaseModel.php';
+require_once 'models/idor_code.php';
 
 class UserModel extends BaseModel {
 
     public function findUserById($id) {
-        $sql = 'SELECT * FROM users WHERE id = '.$id;
+        $sql = 'SELECT * FROM users WHERE id = '.decodeID($id);
         $user = $this->select($sql);
 
         return $user;
@@ -38,7 +39,7 @@ class UserModel extends BaseModel {
      * @return mixed
      */
     public function deleteUserById($id) {
-        $sql = 'DELETE FROM users WHERE id = '.$id;
+        $sql = 'DELETE FROM users WHERE id = '.decodeID($id);
         return $this->delete($sql);
 
     }
@@ -52,7 +53,7 @@ class UserModel extends BaseModel {
         $sql = 'UPDATE users SET 
                 name = "' . mysqli_real_escape_string(self::$_connection, $input['name']) .'", 
                 password="'. md5($input['password']) .'",version=" '. ++$input['version'] .'"
-                WHERE id = ' . $input['id'];
+                WHERE id = ' . decodeID($input['id']);
 
         $user = $this->update($sql);
 
@@ -81,14 +82,28 @@ class UserModel extends BaseModel {
     public function getUsers($params = []) {
         //Keyword
         if (!empty($params['keyword'])) {
-            $sql = 'SELECT * FROM users WHERE name LIKE "%' . $params['keyword'] .'%"';
+            // Prepare the SQL statement
+            $sql = self::$_connection->prepare('SELECT * FROM users WHERE name LIKE ?');
+            
+            // Check if the prepare was successful
+            if ($sql) {
+                // Create a search pattern with wildcards
+                $keyword = '%' . $params['keyword'] . '%';
+                
+                // Bind the parameter to the statement
+                $sql->bind_param('s', $keyword);
 
-            //Keep this line to use Sql Injection
-            //Don't change
-            //Example keyword: abcef%";TRUNCATE banks;##
-            // $users = self::$_connection->multi_query($sql);
+                // Execute the statement
+                $sql->execute();
 
-            $users = $this->query($sql);
+                $users = array();
+                $users = $sql -> get_result()-> fetch_all(MYSQLI_ASSOC);
+            } else {
+                // Handle the prepare error
+                $users = [];
+            }
+
+            // $users = $this->query($sql);
         } else {
             $sql = 'SELECT * FROM users';
             $users = $this->select($sql);

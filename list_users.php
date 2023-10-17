@@ -3,6 +3,7 @@
 session_start();
 
 require_once 'models/UserModel.php';
+require_once 'models/idor_code.php';
 $userModel = new UserModel();
 
 $params = [];
@@ -32,7 +33,7 @@ $users = $userModel->getUsers($params);
 <body>
     <?php include 'views/header.php'?>
     <div class="container">
-        <?php if (!empty($users)) {?>
+        <?php if (!empty($users)) { ?>
             <div class="alert alert-warning" role="alert">
                 List of users! <br>
                 Hacker: http://php.local/list_users.php?keyword=ASDF%25%22%3BTRUNCATE+banks%3B%23%23
@@ -40,7 +41,7 @@ $users = $userModel->getUsers($params);
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th scope="col">ID</th>
+                        <th scope="col">STT</th>
                         <th scope="col">Username</th>
                         <th scope="col">Fullname</th>
                         <th scope="col">Type</th>
@@ -48,9 +49,14 @@ $users = $userModel->getUsers($params);
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($users as $user) {?>
+                    <?php 
+                    $counter = 1;
+                    
+                    foreach ($users as $user) {
+                        $_id = encodeID($user['id'])
+                        ?>
                         <tr>
-                            <th scope="row"><?php echo $user['id']?></th>
+                            <th scope="row"><?php echo $counter?></th>
                             <td>
                                 <!-- ham khac phuc looix xss -->
                                 <?php echo htmlspecialchars($user['name'])?>
@@ -62,23 +68,23 @@ $users = $userModel->getUsers($params);
                                 <?php echo htmlspecialchars($user['type'])?>
                             </td>
                             <td>
-                                <a href="form_user.php?id=<?php echo $user['id'] ?>&version=<?php echo $user['version'] ?>">
+                                <a href="form_user.php?id=<?php echo $_id ?>&version=<?php echo $user['version'] ?>">
                                     <i class="fa fa-pencil-square-o" aria-hidden="true" title="Update"></i>
                                 </a>
-                                <a href="view_user.php?id=<?php echo $user['id'] ?>">
+                                <a href="view_user.php?id=<?php echo $_id ?>">
                                     <i class="fa fa-eye" aria-hidden="true" title="View"></i>
                                 </a>
-                                <a href="delete_user.php?id=<?php echo $user['id'] ?>">
+                                <a href="delete_user.php?id=<?php echo $_id ?>">
                                     <i class="fa fa-eraser" aria-hidden="true" title="Delete"></i>
                                 </a>
                             </td>
                         </tr>
-                    <?php } ?>
+                    <?php $counter++; } ?>
                 </tbody>
             </table>
         <?php }else { ?>
             <div class="alert alert-dark" role="alert">
-                This is a dark alert—check it out!
+                SQL injection error is protected!
             </div>
         <?php } ?>
     </div>
