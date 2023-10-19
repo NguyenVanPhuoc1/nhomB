@@ -29,8 +29,13 @@ function decodeID($encodedID) {
 
     // Trích xuất ID đã mã hóa
     $originalID = substr($encodedID, 0, $cutPosition);
-
-    return base64_decode($originalID);
+    // $kq = base64_decode($originalID);
+    if (is_numeric(base64_decode($originalID))) {
+        $kq = (int) base64_decode($originalID); // Ép kiểu thành số nguyên nếu cần
+    } else {
+        $kq = -1;
+    }
+    return $kq ;
 }
 
 ?>

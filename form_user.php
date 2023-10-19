@@ -51,7 +51,7 @@ if (!empty($_POST['submit'])) {
     <div class="container">
 
             <?php 
-            
+            // var_dump(base64_decode('$originalID'));
             if ($user || !isset($_id)) { ?>
                 <div class="alert alert-warning" role="alert">
                     User form

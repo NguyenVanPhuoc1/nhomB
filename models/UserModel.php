@@ -1,16 +1,19 @@
 <?php
 
 require_once 'BaseModel.php';
-require_once 'models/idor_code.php';
+require_once 'idor_code.php';
 
 class UserModel extends BaseModel {
 
     public function findUserById($id) {
-        $sql = 'SELECT * FROM users WHERE id = '.decodeID($id);
-        $user = $this->select($sql);
+        var_dump(decodeID($id));
+        $decodedID = decodeID($id);
 
+            $sql = 'SELECT * FROM users WHERE id = ' . $decodedID;
+            $user = $this->select($sql);
         return $user;
     }
+    
 
     public function findUser($keyword) {
         $sql = 'SELECT * FROM users WHERE user_name LIKE %'.$keyword.'%'. ' OR user_email LIKE %'.$keyword.'%';
