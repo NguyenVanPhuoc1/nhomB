@@ -54,10 +54,7 @@ if (!empty($_POST['submit'])) {
     $_SESSION["csrf_token"] =  $token;
     ?>
     <div class="container">
-
             <?php 
-            echo $token;
-            // var_dump(base64_decode('$originalID'));
             if ($user || !isset($_id)) { ?>
                 <div class="alert alert-warning" role="alert">
                     User form
@@ -80,7 +77,7 @@ if (!empty($_POST['submit'])) {
                     </form>
             <?php } else { ?>
                 <div class="alert alert-success" role="alert">
-                    User not found!
+                    User not found!;
                 </div>
             <?php } ?>
     </div>
