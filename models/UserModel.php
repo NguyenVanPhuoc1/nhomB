@@ -1,16 +1,19 @@
 <?php
 
 require_once 'BaseModel.php';
-require_once 'models/idor_code.php';
+require_once 'idor_code.php';
 
 class UserModel extends BaseModel {
 
     public function findUserById($id) {
-        $sql = 'SELECT * FROM users WHERE id = '.decodeID($id);
-        $user = $this->select($sql);
+        var_dump(decodeID($id));
+        $decodedID = decodeID($id);
 
+            $sql = 'SELECT * FROM users WHERE id = ' . $decodedID;
+            $user = $this->select($sql);
         return $user;
     }
+    
 
     public function findUser($keyword) {
         $sql = 'SELECT * FROM users WHERE user_name LIKE %'.$keyword.'%'. ' OR user_email LIKE %'.$keyword.'%';
@@ -51,13 +54,15 @@ class UserModel extends BaseModel {
      */
     public function updateUser($input) {
         $sql = 'UPDATE users SET 
-                name = "' . mysqli_real_escape_string(self::$_connection, $input['name']) .'", 
-                password="'. md5($input['password']) .'",version=" '. ++$input['version'] .'"
-                WHERE id = ' . decodeID($input['id']);
+        name = "' . mysqli_real_escape_string(self::$_connection, $input['name']) .'", 
+        password="'. md5($input['password']) .'",version=" '. ++$input['version'] .'"
+        WHERE id = ' . decodeID($input['id']);
 
         $user = $this->update($sql);
-
         return $user;
+       
+
+        
     }
 
     /**
@@ -66,12 +71,24 @@ class UserModel extends BaseModel {
      * @return mixed
      */
     public function insertUser($input) {
-        $sql = "INSERT INTO `app_web1`.`users` (`name`, `password`) VALUES (" .
+        if(isset($_SESSION["csrf_token"]) && isset($_POST["csrf_token"])){
+            if(isset($_POST["submit"]) && ($_POST["csrf_token"]==$_SESSION["csrf_token"])){
+                $sql = "INSERT INTO `app_web1`.`users` (`name`, `password`) VALUES (" .
                 "'" . $input['name'] . "', '".md5($input['password'])."')";
-
-        $user = $this->insert($sql);
-
+                $user = $this->insert($sql);
         return $user;
+            }
+            else{
+                echo '<script>
+                    alert("Sai token.");
+                </script>';
+            }
+        }
+        else{
+            echo  '<script>
+            alert("Tan cong CSRF");
+            </script>';
+        }
     }
 
     /**
